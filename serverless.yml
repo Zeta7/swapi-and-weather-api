@@ -1,0 +1,151 @@
+service: starwars-weather-service
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: dev
+  environment:
+    CACHE_TABLE: cache-table #${self:service}-cache-${self:provider.stage}
+    HISTORY_TABLE: history-table #${self:service}-history-${self:provider.stage}
+    PROFILE_DATA_TABLE: profile #${self:service}-profiledata-${self:provider.stage}
+    USER_DATA_TABLE: user #${self:service}-userdata-${self:provider.stage}
+    JWT_SECRET: jsbfhsajb #${self:service}-jwtsecret-${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:UpdateItem
+          Resource:
+            - Fn::GetAtt: [CacheTable, Arn]
+            - Fn::GetAtt: [HistoryTable, Arn]
+            - Fn::GetAtt: [ProfileDataTable, Arn]
+            - Fn::GetAtt: [UserDataTable, Arn]
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+  # - serverless-dynamodb-local
+  # - serverless-dynamodb
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+
+functions:
+  # REGISTER
+  register:
+    handler: src/handlers/register.handler
+    events:
+      - http:
+          path: auth/register
+          method: post
+    timeout: 6
+    memorySize: 256
+  # LOGIN
+  login:
+    handler: src/handlers/login.handler
+    events:
+      - http:
+          path: auth/login
+          method: post
+  # AUTHORIZER
+  auth:
+    handler: src/handlers/auth.handler
+  # GET FUSION
+  getFusion:
+    handler: src/handlers/getFusion.handler
+    events:
+      - http:
+          path: fusion
+          method: get
+    timeout: 10 
+    memorySize: 512
+  # SAVE DATA PROFILE
+  postSaveData:
+    handler: src/handlers/postData.handler
+    events:
+      - http:
+          path: save-data
+          method: post
+          authorizer: auth
+    timeout: 6
+    memorySize: 256
+  # GET HISTORY
+  getHistory:
+    handler: src/handlers/getHistory.handler
+    events:
+      - http:
+          path: history
+          method: get
+    timeout: 10
+    memorySize: 512
+
+resources:
+  Resources:
+    CacheTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: cache-table #${self:provider.environment.CACHE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: cacheKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: cacheKey
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: expiresAt
+          Enabled: true
+
+    HistoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: history-table #${self:provider.environment.HISTORY_TABLE}
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: N
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    ProfileDataTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: profile #${self:provider.environment.USERDATA_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    UserDataTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: user #${self:provider.environment.USERDATA_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST

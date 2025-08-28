@@ -1,0 +1,33 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Serverless & esbuild build artifacts
+.esbuild/
+.serverless/
+dist/
+build/
+
+# Local AWS credentials/config
+.aws/
+
+# Logs
+*.log
+logs/
+*.out
+*.pid
+
+# IDE/editor stuff
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Env files
+.env
+.env.*
+
+.dynamodb
