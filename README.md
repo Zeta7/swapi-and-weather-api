@@ -62,8 +62,6 @@ API RESTful que combina información de la API de Star Wars (SWAPI) con datos de
 
 ## Uso de Endpoints
 
-Utiliza JWT con la siguiente estructura:
-
 - Registro desde `auth/register` con:
   ```json
   {
@@ -89,6 +87,7 @@ Utiliza JWT con la siguiente estructura:
   ```query
   limit=2
   ```
+Endpoint protegido con autenticación JWT:
 
 - Header: `Authorization: Bearer <token>`
 - Alamcenar datos desde `/save-data` con:
