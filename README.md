@@ -36,7 +36,7 @@ API RESTful que combina información de la API de Star Wars (SWAPI) con datos de
 | POST   | /auth/register| Registro de usuario                                         | ❌         |
 | GET    | /fusion       | fusiona y guarda resultado                                  | ❌         |
 | POST   | /save-data    | Guarda datos personalizados en la DB                        | ✅ JWT     |
-| GET    | /historial    | Retorna historial de respuestas de `/fusion` paginado       | ❌         |
+| GET    | /history    | Retorna historial de respuestas de `/fusion` paginado       | ❌         |
 
 ---
 
