@@ -9,9 +9,16 @@ export const getUserByEmail = async (email: string) => {
   return res.Item as any;
 };
 
-export const saveUser = async (user: any) => {
+export const saveUser = async (user: User) => {
   await docClient.send(new PutCommand({
     TableName: USER_DATA_TABLE,
     Item: user
   }));
+};
+
+type User = {
+  id: string;
+  password: string;
+  createdAt: number;
+  uuid: string;
 };
