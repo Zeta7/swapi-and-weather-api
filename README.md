@@ -60,12 +60,11 @@ API RESTful que combina información de la API de Star Wars (SWAPI) con datos de
 
 ---
 
-## Autenticación
+## Uso de Endpoints
 
 Utiliza JWT con la siguiente estructura:
 
-- Header: `Authorization: Bearer <token>`
-- Token generado desde `auth/login` con:
+- Registro desde `auth/register` con:
   ```json
   {
     "email": "test@gmail.com",
@@ -73,6 +72,32 @@ Utiliza JWT con la siguiente estructura:
   }
   ```
 
+- Inicio de sesion desde `auth/login` con:
+  ```json
+  {
+    "email": "test@gmail.com",
+    "password": "123test.."
+  }
+  ```
+
+- Obtener datos fusionados desde `/fusion` con:
+  ```query
+  page=2
+  ```
+
+- Obtener historial de peticiones de fusion desde `/history` con:
+  ```query
+  limit=2
+  ```
+
+- Header: `Authorization: Bearer <token>`
+- Alamcenar datos desde `/save-data` con:
+  ```json
+  {
+    "name": "Edson Meza",
+    "dni": "12345678"
+  }
+  ```
 ---
 
 ## Despliegue en AWS
